@@ -159,5 +159,19 @@ namespace Unity.FPS.Gameplay
             return 0;
      
         }
+
+        //조준 - 마우스 우클릭or left ant 하는도안
+        public bool GetAimInputHeld()
+        {
+          
+            if (CanProcessInput())
+            {
+
+                return Input.GetButton(GameConstants.k_ButtonNameAim);
+             
+            }
+
+            return false;
+        }
     }
 }
