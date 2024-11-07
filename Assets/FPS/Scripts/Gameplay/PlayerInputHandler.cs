@@ -20,6 +20,8 @@ namespace Unity.FPS.Gameplay
         [Tooltip("Used to flip the horizontal input axis")]
         public bool InvertXAxis = false;
 
+        private bool fireInputWasHeald = false;
+        private bool aimInputWasHeald = false;
 
         void Start()
         {   
@@ -29,7 +31,8 @@ namespace Unity.FPS.Gameplay
 
         void LateUpdate()
         {
-            
+            fireInputWasHeald = GetFireInputHeld();
+            aimInputWasHeald = GetAimInputHeld();
         }
 
         public bool CanProcessInput()
@@ -55,6 +58,7 @@ namespace Unity.FPS.Gameplay
 
         public float GetLookInputsHorizontal()
         {
+
             return GetMouseLookAxis(GameConstants.k_MouseAxisNameHorizontal);
         }
 
@@ -159,6 +163,34 @@ namespace Unity.FPS.Gameplay
             return 0;
      
         }
+        //조준 시작
+        public bool GetAimInputDown()
+        {
+
+            if (CanProcessInput())
+            {
+                return GetAimInputHeld() == true && aimInputWasHeald == false;
+                //return Input.GetButtonDown(GameConstants.k_ButtonNameAim);
+
+            }
+
+            return false;
+        }
+
+        //조준 끝
+        public bool GetAimInputUp()
+        {
+
+            if (CanProcessInput())
+            {
+                return GetAimInputHeld() == false && aimInputWasHeald == true;
+                //return Input.GetButtonUp(GameConstants.k_ButtonNameAim);
+
+            }
+
+            return false;
+        }
+
 
         //조준 - 마우스 우클릭or left ant 하는도안
         public bool GetAimInputHeld()
@@ -172,6 +204,45 @@ namespace Unity.FPS.Gameplay
             }
 
             return false;
+        }
+
+        //파이어 버튼 누르기시작
+       
+        public bool GetFireInputDown()
+        {
+            if(CanProcessInput())
+            {
+                return GetFireInputHeld()==true && fireInputWasHeald == true;
+                //return Input.GetButtonDown(GameConstants.k_ButtonNameFire);
+            }
+
+            fireInputWasHeald = true;
+            return false ;
+        }
+
+
+        //파이어 버튼 누르기 끝
+        public bool GetFireInputUp()
+        {
+            if (CanProcessInput())
+            {
+                return GetFireInputHeld() == false && fireInputWasHeald == true;
+            }
+
+            return false ;
+        }
+
+
+        //파이어 버튼 누르기 중
+        public bool GetFireInputHeld()
+        {
+            
+                if (CanProcessInput())
+                {
+                    return Input.GetButton(GameConstants.k_ButtonNameFire);
+                }
+            return false ;
+
         }
     }
 }
