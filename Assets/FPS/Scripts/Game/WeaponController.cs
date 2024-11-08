@@ -44,13 +44,15 @@ namespace Unity.FPS.Game
         public GameObject SourcePrefab { get; set; }    //무기를 생성한 오리지널 프리팹
         public bool IsWeaponActive { get; private set; }    //무기 활성화 여부
 
+        public string weaponName; //무기이름
+
         private AudioSource shootAudioSource;
         public AudioClip switchWeaponSfx;
 
         //shooting
         public WeaponShootType shootType;
 
-        [SerializeField] private float maxAmmo = 8f;    //장전할 수 있는 최대 총알 갯수
+        public float maxAmmo = 8f;    //장전할 수 있는 최대 총알 갯수
         private float cuttentAmmo;
         [SerializeField] private float delayBetweenShots = 0.5f;    //슛간격
         private float lastTimeShot;                                 //마지막으로 슛한 시간
@@ -75,13 +77,15 @@ namespace Unity.FPS.Game
         //Projectile
         public ProjectileBase projectilePrefab;
 
-        public Vector3 MuzzleWorldVelocity { get; private set; }
+        public Vector3 MuzzleWorldVelocity { get; private set; }        //g현재 프레임에서의 총구시간
         private Vector3 lastMuzzlePosition;
         public float CurrentCharge { get; private set; }
 
+       [SerializeField] private int bulletsPerShot = 1; //한번 슛하는데 발사되는 탄환의 개수
+       [SerializeField] private float bulletSpreadAngle = 0f;    //불렛이 퍼져 나가는 각도
 
         #endregion
-
+        public float CurrentAmoRatio => currentAmmo/maxAmmo;
         private void Awake()
         {
             //참조
@@ -93,6 +97,24 @@ namespace Unity.FPS.Game
             //초기화
             currentAmmo = maxAmmo;
             lastTimeShot = Time.time;
+            lastMuzzlePosition = weaponMuzzle.position;
+        }
+
+        private void Update()
+        {
+            //MuzzleWorldVelocity
+            if (Time.time > 0)
+            {
+                MuzzleWorldVelocity = (weaponMuzzle.position - lastMuzzlePosition)/Time.deltaTime;
+
+                lastMuzzlePosition = weaponMuzzle.position;
+            }
+
+            //치트키
+            if (Input.GetKeyDown(KeyCode.T))
+            {
+                currentAmmo = maxAmmo;
+            }
         }
 
         //무기 활성화, 비활성화
@@ -120,14 +142,14 @@ namespace Unity.FPS.Game
                 case WeaponShootType.Manual:
                     if (inputDown)
                     {
-                        Debug.Log("Manual");
+                        
                         return TryShoot();
                     }
                     break;
                 case WeaponShootType.Automatic:
                     if (inputHeld)
                     {
-                        Debug.Log("Automatic");
+                    
                         return TryShoot();
                     }
                     break;
@@ -137,7 +159,7 @@ namespace Unity.FPS.Game
 
                     }
                     break;
-                    case WeaponShootType.Sniper:
+                case WeaponShootType.Sniper:
                     if (inputDown)
                     {
                         return TryShoot();
@@ -161,9 +183,25 @@ namespace Unity.FPS.Game
             return false;
         }
 
+        //void Reload()
+        //{
+        //    //장전
+        //    if (Input.GetKeyDown(KeyCode.R))
+        //    {
+        //        currentAmmo = maxAmmo;
+        //    }
+        //}
+
         //슛연출
         void HandleShoot()
         {
+            //project Tile 생성
+            for (int i = 0; i < bulletsPerShot; i++)
+            {
+                Vector3 ShotDirection = GetShotDirectionWithSpread(weaponMuzzle);
+               ProjectileBase projectileBase = Instantiate(projectilePrefab, weaponMuzzle.position, Quaternion.LookRotation(ShotDirection));
+                projectileBase.Shoot(this);
+            }
             //Vfx
             if (muzzleFlashPrefab)
             {
@@ -178,6 +216,13 @@ namespace Unity.FPS.Game
             }
             //마지막으로 슛한시간 저장
             lastTimeShot = Time.time;
+        }
+
+        //projectile 날아가는 방향
+        Vector3 GetShotDirectionWithSpread(Transform shootTransfrom)
+        {
+            float spreadAngleRatio = bulletSpreadAngle / 180;
+            return Vector3.Lerp(shootTransfrom.forward, UnityEngine.Random.insideUnitSphere, spreadAngleRatio);
         }
     }
 }

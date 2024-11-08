@@ -243,9 +243,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponRoot: {fileID: 1505447205160222267}
+  weaponName: Shotgun
   switchWeaponSfx: {fileID: 8300000, guid: f3ed3279d87c0a246b05b07d7e066988, type: 3}
   shootType: 1
-  maxAmmo: 8
+  maxAmmo: 100
   delayBetweenShots: 0.5
   weaponMuzzle: {fileID: 8334323006752503713}
   muzzleFlashPrefab: {fileID: 748781637555137343, guid: 4f5d4e5eaa0e5104791549cea3dc3f23,
@@ -265,6 +266,8 @@ MonoBehaviour:
   recoilForce: 0.5
   projectilePrefab: {fileID: -1760169445925573453, guid: f05c7e6fbbfbe824388456bb4abff9d4,
     type: 3}
+  bulletsPerShot: 24
+  bulletSpreadAngle: 30
 --- !u!1 &2867801751256125023
 GameObject:
   m_ObjectHideFlags: 0

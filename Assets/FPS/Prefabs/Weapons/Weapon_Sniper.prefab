@@ -177,6 +177,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponRoot: {fileID: 3397282431288995368}
+  weaponName: Sniper
   switchWeaponSfx: {fileID: 0}
   shootType: 3
   maxAmmo: 8
@@ -197,8 +198,10 @@ MonoBehaviour:
   aimOffset: {x: 0, y: 0.16, z: 0}
   currentAmmo: 0.08
   recoilForce: 0.1
-  projectilePrefab: {fileID: -1760169445925573453, guid: f05c7e6fbbfbe824388456bb4abff9d4,
+  projectilePrefab: {fileID: -2369465078141275485, guid: 0e23901b938cf4f4eb86850d912715eb,
     type: 3}
+  bulletsPerShot: 1
+  bulletSpreadAngle: 0
 --- !u!1 &3397282431288995368
 GameObject:
   m_ObjectHideFlags: 0

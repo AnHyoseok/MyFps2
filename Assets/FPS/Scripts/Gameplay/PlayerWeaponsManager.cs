@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using Unity.FPS.Game;
 using Unity.VisualScripting;
+using UnityEngine.Experimental.Rendering;
 
 namespace Unity.FPS.Gameplay
 {
@@ -38,6 +39,8 @@ namespace Unity.FPS.Gameplay
 
         //무기 교체
         public UnityAction<WeaponController> OnSwitchToWeapon;  //무기 교체할때마다 등록된 함수 호출
+        public UnityAction<WeaponController, int> OnAddedWeapon; //무기 추가할때마다 등록된 함수 호출
+        public UnityAction<WeaponController, int> OnRemoveWeapon; //무기 제거할때마다 등록된 함수 호출
 
         private WeaponSwithState weaponSwithState;          //무기 교체시 상태
 
@@ -90,13 +93,13 @@ namespace Unity.FPS.Gameplay
 
         //저격 모드
         private bool isScopeOn = false;
-       [SerializeField] private float distanceOnScope = 0.1f;
+        [SerializeField] private float distanceOnScope = 0.1f;
 
 
         public UnityAction OnScopedWeapon;          //저격모드 시작시 등록된 함수 호출
         public UnityAction OffScopedWeapon;         //저격모드 종료시 등록된 함수 호출
 
-     
+        public GameObject scopeUI;
         #endregion
 
         private void Start()
@@ -105,7 +108,7 @@ namespace Unity.FPS.Gameplay
             playerInputHandler = GetComponent<PlayerInputHandler>();
             playerCharacterController = GetComponent<PlayerCharacterController>();
 
-          
+
             //초기화
             ActiveWeaponIndex = -1;
             weaponSwithState = WeaponSwithState.Down;
@@ -117,6 +120,7 @@ namespace Unity.FPS.Gameplay
             OnScopedWeapon += OnScope;
             OffScopedWeapon += OffScope;
 
+         
             //Fov 초기값 설정
             SetFov(defaultFov);
 
@@ -132,6 +136,13 @@ namespace Unity.FPS.Gameplay
         {
             //현재 액티브 무기
             WeaponController activeWeapon = GetActiveWeapon();
+
+            //장전
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                activeWeapon.currentAmmo = activeWeapon.maxAmmo;
+            }
+
             //Debug.Log(weaponSwithState);
             if (weaponSwithState == WeaponSwithState.Up)
             {
@@ -141,7 +152,7 @@ namespace Unity.FPS.Gameplay
                 IsAiming = playerInputHandler.GetAimInputHeld();
 
                 //저격 모드 처리
-                if(activeWeapon.shootType == WeaponShootType.Sniper)
+                if (activeWeapon.shootType == WeaponShootType.Sniper)
                 {
                     if (playerInputHandler.GetAimInputDown())
                     {
@@ -167,8 +178,8 @@ namespace Unity.FPS.Gameplay
                 {
                     //반동효과
                     accumulateRecoil += Vector3.back * activeWeapon.recoilForce;
-                    accumulateRecoil = Vector3.ClampMagnitude(accumulateRecoil,maxRecoilDistance);
-                    
+                    accumulateRecoil = Vector3.ClampMagnitude(accumulateRecoil, maxRecoilDistance);
+
                 }
             }
 
@@ -197,8 +208,8 @@ namespace Unity.FPS.Gameplay
                     }
                 }
             }
-            Instantiate(activeWeapon.projectilePrefab, activeWeapon.weaponMuzzle)
-          
+            //Instantiate(activeWeapon.projectilePrefab, activeWeapon.weaponMuzzle);
+
         }
 
         #region Gizmo
@@ -232,18 +243,18 @@ namespace Unity.FPS.Gameplay
             UpdateWeaponRecoil();
             UpdateWeaponAiming();
             UpdateWeaponSwitching();
-           
+
             //무기 최종 위치
-            weaponParentSocket.localPosition = weaponMainLocalPosition + weaponBobLocalPosition+ weaponRecoilLocalPosition;
+            weaponParentSocket.localPosition = weaponMainLocalPosition + weaponBobLocalPosition + weaponRecoilLocalPosition;
         }
 
         //반동 
         void UpdateWeaponRecoil()
         {
-            if(weaponRecoilLocalPosition.z >= accumulateRecoil.z * 0.99f)
+            if (weaponRecoilLocalPosition.z >= accumulateRecoil.z * 0.99f)
             {
-                weaponRecoilLocalPosition = 
-                    Vector3.Lerp(weaponRecoilLocalPosition,accumulateRecoil,recoilSharpness*Time.deltaTime);
+                weaponRecoilLocalPosition =
+                    Vector3.Lerp(weaponRecoilLocalPosition, accumulateRecoil, recoilSharpness * Time.deltaTime);
             }
             else
             {
@@ -293,9 +304,9 @@ namespace Unity.FPS.Gameplay
                 //저격모드 시작
                 if (isScopeOn)
                 {
-                  
-                    float dist = Vector3.Distance(weaponMainLocalPosition,aimingWeaponPosition.localPosition+activeWeapon.aimOffset);
-                    if(dist < distanceOnScope)
+
+                    float dist = Vector3.Distance(weaponMainLocalPosition, aimingWeaponPosition.localPosition + activeWeapon.aimOffset);
+                    if (dist < distanceOnScope)
                     {
                         OnScopedWeapon?.Invoke();
                         isScopeOn = false;
@@ -317,8 +328,8 @@ namespace Unity.FPS.Gameplay
                 weaponMainLocalPosition = Vector3.Lerp(weaponMainLocalPosition, defaultWeaponPostion.localPosition, aimingAnimationSpeed * Time.deltaTime);
                 float fov = Mathf.Lerp(playerCharacterController.PlayerCamera.fieldOfView, defaultFov, aimingAnimationSpeed * Time.deltaTime);
                 SetFov(fov);
-                
-            
+
+
             }
         }
 
@@ -375,6 +386,12 @@ namespace Unity.FPS.Gameplay
             //지연시간이후 무기 상태 바꾸기
             if (switchingTimeFactor >= 1f)
             {
+
+                ///찾기용 
+                //이름 찾아서 교체할때 인덱스가 sniper몇 바꾸면될듯?
+                /* WeaponController Sniper = GetActiveWeapon();
+                 if (Sniper == GetActiveWeapon().("ShotGun")) {
+                 }*/
                 if (weaponSwithState == WeaponSwithState.PutDownPrvious)
                 {
                     //현재무기 false, 새로운 무기 true
@@ -441,6 +458,11 @@ namespace Unity.FPS.Gameplay
                     weaponInstance.SourcePrefab = weaponPrefab.gameObject;
                     weaponInstance.ShowWeapon(false);
 
+                    //무기장착 
+                    OnAddedWeapon?.Invoke(weaponInstance, i);
+
+
+
                     weaponSlots[i] = weaponInstance;
 
                     return true;
@@ -450,8 +472,31 @@ namespace Unity.FPS.Gameplay
             Debug.Log("weaponSlots full");
             return false;
         }
+        //weaponSlots에 장착된 무기 제거
+        public bool RemoveWeapon(WeaponController oldWeapon)
+        {
+            for (int i = 0; i < weaponSlots.Length; i++)
+            {
+                //같은 무기 찾아서 제거
+                if (weaponSlots[i] == oldWeapon)
+                {
+                    //제거
+                    weaponSlots[i] = null;
+                    OnRemoveWeapon.Invoke(oldWeapon, i);
+                    Destroy(oldWeapon.gameObject);
+                    //현재 제거한 무기가 액티브이면
+                    if(i == ActiveWeaponIndex)
+                    {
+                        SwitchWeapon(true);
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
 
-        //매개변수로 들어온 
+
+        //매개변수로 들어온 프리팹으로 만든 무기가 있는지 체크
         private WeaponController HasWeapon(WeaponController weaponPrefab)
         {
             for (int i = 0; i < weaponSlots.Length; i++)
@@ -500,6 +545,7 @@ namespace Unity.FPS.Gameplay
                 }
             }
 
+
             //새로 액티브할 무기 인덱스로 무기 교체
             SwitchToWeaponIndex(newWeaponIndex);
         }
@@ -526,6 +572,7 @@ namespace Unity.FPS.Gameplay
                 {
                     weaponSwithState = WeaponSwithState.PutDownPrvious;
                 }
+
             }
         }
 
@@ -569,10 +616,10 @@ namespace Unity.FPS.Gameplay
             weaponCamera.enabled = true;
         }
 
-      void UpdateShot()
+        void UpdateShot()
         {
-          
-            
+
+
         }
     }
 }

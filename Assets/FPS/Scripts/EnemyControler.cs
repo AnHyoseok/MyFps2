@@ -16,9 +16,7 @@ namespace Unity.FPS.Game
         }
         private void Start()
         {
-            Vector3 targetPos = new Vector3(-20.5f, 5f, 0f);
-            transform.DOMove(targetPos, 20).SetLoops(-1, LoopType.Yoyo);
-            transform.DOScale(new Vector3 (5,5,5), 20f).SetLoops(-1, LoopType.Yoyo);
+            transform.DOScale(new Vector3(5, 5, 5), 5f);
 
         }
     }

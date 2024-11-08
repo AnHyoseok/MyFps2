@@ -17,7 +17,7 @@ namespace Unity.FPS.Game
         public Vector3 InheritedMuzzleVelocity { get; private set; }    //총구속도
         public float InitialCharge { get; private set; }    //초기 차지값
 
-        public UnityAction OnShot;                          //발사시 등록된 함수 호출
+        public UnityAction OnShoot;                          //발사시 등록된 함수 호출
         #endregion
 
         public void Shoot(WeaponController controller)
@@ -29,7 +29,7 @@ namespace Unity.FPS.Game
             InheritedMuzzleVelocity = controller.MuzzleWorldVelocity;
             InitialCharge = controller.CurrentCharge;
 
-            OnShot?.Invoke();
+            OnShoot?.Invoke();
         }
     }
 }
