@@ -43,6 +43,8 @@ GameObject:
   - component: {fileID: 4340857163812017755}
   - component: {fileID: 6868612320699318132}
   - component: {fileID: -4887421756913666351}
+  - component: {fileID: -5586565789812118036}
+  - component: {fileID: 7578605706701763517}
   m_Layer: 0
   m_Name: Rasen
   m_TagString: Untagged
@@ -132,6 +134,7 @@ MonoBehaviour:
   gravityDown: 5
   root: {fileID: 4989407299112233798}
   tip: {fileID: 7245913516586079982}
+  radius: 0.01
   hittableLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -139,3 +142,44 @@ MonoBehaviour:
     type: 3}
   impactVfxLifeTime: 5
   impactSfxClip: {fileID: 8300000, guid: db46c2191c107b74a91ac05361ca2013, type: 3}
+  damage: 20
+--- !u!114 &-5586565789812118036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6733102080573027925}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9f536e536bd68343b656a5eb352d433, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Damage:
+    Min: 80
+    Max: 350
+  Speed:
+    Min: 20
+    Max: 40
+  GravityDown:
+    Min: 10
+    Max: 3
+  Radius:
+    Min: 0.2
+    Max: 5
+--- !u!114 &7578605706701763517
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6733102080573027925}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64affa8c81ac39b469047e41f12e7c42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chargeObject: {fileID: 6733102080573027925}
+  scale:
+    Min: {x: 0.5, y: 0.5, z: 0.5}
+    Max: {x: 5, y: 5, z: 5}

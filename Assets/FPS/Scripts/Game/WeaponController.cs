@@ -79,13 +79,22 @@ namespace Unity.FPS.Game
 
         public Vector3 MuzzleWorldVelocity { get; private set; }        //g현재 프레임에서의 총구시간
         private Vector3 lastMuzzlePosition;
+
+
+        [SerializeField] private int bulletsPerShot = 1; //한번 슛하는데 발사되는 탄환의 개수
+        [SerializeField] private float bulletSpreadAngle = 0f;    //불렛이 퍼져 나가는 각도
+
+        //Charge : 발사 버튼을 누르고 있으면 발사체의 데미지,속도가 일정값까지 커진다
         public float CurrentCharge { get; private set; }
+        public bool IsCharging { get; private set; }
 
-       [SerializeField] private int bulletsPerShot = 1; //한번 슛하는데 발사되는 탄환의 개수
-       [SerializeField] private float bulletSpreadAngle = 0f;    //불렛이 퍼져 나가는 각도
+        [SerializeField] private float ammoUseOnStartCharge = 1f; //충전 시작 버튼을 누르기 위해 필요한 ammo 량
+        [SerializeField] private float ammoUsageRateWhileCharging = 1f; //차지하고 있는동안 소비되는 ammo량
+        private float maxChargeDuration = 2f;   //충전시간 max
 
+        public float lastChargeTriggerTimeStamp;    //충전 시작 시간
         #endregion
-        public float CurrentAmoRatio => currentAmmo/maxAmmo;
+        public float CurrentAmoRatio => currentAmmo / maxAmmo;
         private void Awake()
         {
             //참조
@@ -102,10 +111,14 @@ namespace Unity.FPS.Game
 
         private void Update()
         {
+            //충전
+            UpdateCharge();
+
+
             //MuzzleWorldVelocity
             if (Time.time > 0)
             {
-                MuzzleWorldVelocity = (weaponMuzzle.position - lastMuzzlePosition)/Time.deltaTime;
+                MuzzleWorldVelocity = (weaponMuzzle.position - lastMuzzlePosition) / Time.deltaTime;
 
                 lastMuzzlePosition = weaponMuzzle.position;
             }
@@ -114,6 +127,40 @@ namespace Unity.FPS.Game
             if (Input.GetKeyDown(KeyCode.T))
             {
                 currentAmmo = maxAmmo;
+            }
+
+        }
+        //충전
+        void UpdateCharge()
+        {
+            if (IsCharging)
+            {
+                if (CurrentCharge < 1f)
+                {
+                    //현재 남아있는 충전량
+                    float chargeLeft = 1f - CurrentCharge;
+
+                    float chargeAdd = 0f; //이번 프레임에 충전할 량
+                    if (maxChargeDuration <= 0f)
+                    {
+                        Debug.Log("chargeAdd"+chargeAdd);
+                        chargeAdd = chargeLeft; //한번에 풀 충전
+                    }
+                    else
+                    {
+                        chargeAdd = (1f / maxChargeDuration) * Time.deltaTime;
+                    }
+                    chargeAdd = Mathf.Clamp(chargeAdd,0f,chargeLeft);   //남아있는 충전량보다 작아야한다 
+
+                    //chargeAdd 만큼 탄환 소비
+                    float ammoThisChargeRequire = chargeAdd * ammoUsageRateWhileCharging;
+                    if(ammoThisChargeRequire <= currentAmmo)
+                    {
+                        UseAmmo(ammoThisChargeRequire);
+                        CurrentCharge =Mathf.Clamp01(CurrentCharge + chargeAdd);
+                    }
+          
+                }
             }
         }
 
@@ -142,21 +189,27 @@ namespace Unity.FPS.Game
                 case WeaponShootType.Manual:
                     if (inputDown)
                     {
-                        
+
                         return TryShoot();
                     }
                     break;
                 case WeaponShootType.Automatic:
                     if (inputHeld)
                     {
-                    
+
                         return TryShoot();
                     }
                     break;
                 case WeaponShootType.Charge:
+                    if (inputHeld)
+                    {
+                        //충전시작
+                        TryBeginCharge();
+                    }
                     if (inputUp)
                     {
-
+                        //충전 끝 발사
+                        return TryReleaseCharge();
                     }
                     break;
                 case WeaponShootType.Sniper:
@@ -167,6 +220,43 @@ namespace Unity.FPS.Game
                     break;
             }
             return false;
+        }
+
+        //충전 시작
+        void TryBeginCharge()
+        {
+            if (IsCharging == false && currentAmmo > ammoUseOnStartCharge && (lastTimeShot + delayBetweenShots) < Time.time)
+            {
+                UseAmmo(ammoUseOnStartCharge);
+
+                lastChargeTriggerTimeStamp = Time.time;
+                currentAmmo -= 1f;
+                IsCharging = true;
+
+            }
+        }
+
+        //충전 끝 발사
+        bool TryReleaseCharge()
+        {
+            if (IsCharging)
+            {
+                //슛
+                HandleShoot();
+                Debug.Log("충전끝발사    ");
+                //초기화 
+                CurrentCharge = 0f;
+                IsCharging = false;
+                return true;
+            }
+
+            return false;
+        }
+
+        void UseAmmo(float amount)
+        {
+            currentAmmo = Mathf.Clamp(currentAmmo - amount, 0f, maxAmmo);
+            lastTimeShot = Time.time;
         }
 
         bool TryShoot()
@@ -192,6 +282,9 @@ namespace Unity.FPS.Game
         //    }
         //}
 
+
+
+
         //슛연출
         void HandleShoot()
         {
@@ -199,7 +292,7 @@ namespace Unity.FPS.Game
             for (int i = 0; i < bulletsPerShot; i++)
             {
                 Vector3 ShotDirection = GetShotDirectionWithSpread(weaponMuzzle);
-               ProjectileBase projectileBase = Instantiate(projectilePrefab, weaponMuzzle.position, Quaternion.LookRotation(ShotDirection));
+                ProjectileBase projectileBase = Instantiate(projectilePrefab, weaponMuzzle.position, Quaternion.LookRotation(ShotDirection));
                 projectileBase.Shoot(this);
             }
             //Vfx
@@ -224,5 +317,7 @@ namespace Unity.FPS.Game
             float spreadAngleRatio = bulletSpreadAngle / 180;
             return Vector3.Lerp(shootTransfrom.forward, UnityEngine.Random.insideUnitSphere, spreadAngleRatio);
         }
+
+
     }
 }

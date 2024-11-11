@@ -147,7 +147,7 @@ MonoBehaviour:
   weaponRoot: {fileID: 5646165488041817916}
   weaponName: Launcher
   switchWeaponSfx: {fileID: 8300000, guid: f3ed3279d87c0a246b05b07d7e066988, type: 3}
-  shootType: 0
+  shootType: 2
   maxAmmo: 8
   delayBetweenShots: 0.5
   weaponMuzzle: {fileID: 2749496858225023403}
@@ -165,10 +165,13 @@ MonoBehaviour:
   aimOffset: {x: 0, y: 0, z: 0}
   currentAmmo: 0
   recoilForce: 0.7
-  projectilePrefab: {fileID: -4887421756913666351, guid: bcfcac192582e774687017885dc7325c,
+  projectilePrefab: {fileID: -2369465078141275485, guid: 0e23901b938cf4f4eb86850d912715eb,
     type: 3}
   bulletsPerShot: 1
   bulletSpreadAngle: 0
+  ammoUseOnStartCharge: 1
+  ammoUsageRateWhileCharging: 1
+  lastChargeTriggerTimeStamp: 0
 --- !u!1 &2990922162098100101
 GameObject:
   m_ObjectHideFlags: 0
