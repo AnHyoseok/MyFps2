@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: -2369465078141275485}
   - component: {fileID: -8351730336344996410}
   - component: {fileID: -872735969151659131}
+  - component: {fileID: 3713000894673927919}
   m_Layer: 0
   m_Name: Projectile_Disc
   m_TagString: Untagged
@@ -152,6 +153,43 @@ MonoBehaviour:
   scale:
     Min: {x: 0.5, y: 0.5, z: 0.5}
     Max: {x: 3, y: 3, z: 3}
+--- !u!114 &3713000894673927919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 106790115311484953}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e266c70342ec3ce49892940d56c30709, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  areaOfEffectDistance: 10
+  damageRatioOverDistance:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -0.024484873
+      value: 1.0721805
+      inSlope: 0.15883242
+      outSlope: 0.15883242
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 11.347363
+      value: 2.8783987
+      inSlope: 0.15883242
+      outSlope: 0.15883242
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &1945832826066038730
 GameObject:
   m_ObjectHideFlags: 0

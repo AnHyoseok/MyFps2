@@ -93,6 +93,11 @@ namespace Unity.FPS.Game
         private float maxChargeDuration = 2f;   //충전시간 max
 
         public float lastChargeTriggerTimeStamp;    //충전 시작 시간
+
+        //Reload: 재장전
+        private float ammoReloadDelay = 2f;
+
+        //private bool automaticReload = true;
         #endregion
         public float CurrentAmoRatio => currentAmmo / maxAmmo;
         private void Awake()
@@ -114,6 +119,8 @@ namespace Unity.FPS.Game
             //충전
             UpdateCharge();
 
+            //장전
+            UpdateAmmo();
 
             //MuzzleWorldVelocity
             if (Time.time > 0)
@@ -130,6 +137,16 @@ namespace Unity.FPS.Game
             }
 
         }
+        //Reload - Auto
+        private void UpdateAmmo()
+        {
+            if(IsCharging== false && lastTimeShot +ammoReloadDelay <Time.time)
+            {
+                currentAmmo += 1 * Time.deltaTime;
+                currentAmmo = Mathf.Clamp(currentAmmo, 0, maxAmmo);
+            }
+        }
+
         //충전
         void UpdateCharge()
         {

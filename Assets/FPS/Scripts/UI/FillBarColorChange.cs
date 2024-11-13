@@ -18,6 +18,8 @@ namespace Unity.FPS.UI
         public Color defaultBackgroundColor;            //백그라운드 기본 컬러
         public Color flashBackgroundColorEmpty;         //게이지가 비는 순간의 플래쉬 효과
 
+
+
         private float fullValue = 1f;                   //게이지가 가득차있을때의 값
         private float emptyValue = 0f;                  //게이지가 비어있을때의 값
 

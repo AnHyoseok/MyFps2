@@ -26,7 +26,7 @@ namespace Unity.FPS.UI
         public void OnScope()
         {
             scopeUI.SetActive(true);
-            Debug.Log("ภ฿ตส");
+            //Debug.Log("ภ฿ตส");
         }
 
         public void OffScope()

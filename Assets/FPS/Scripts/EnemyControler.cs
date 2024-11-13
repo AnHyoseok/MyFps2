@@ -19,5 +19,10 @@ namespace Unity.FPS.Game
             transform.DOScale(new Vector3(5, 5, 5), 5f);
 
         }
+
+        private void Update()
+        {
+           transform.DOMove(new Vector3(10,5,-10), 10);
+        }
     }
 }

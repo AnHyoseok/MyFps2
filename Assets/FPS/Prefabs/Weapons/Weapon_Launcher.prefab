@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2225486910712267856}
   - component: {fileID: 7583640433812654122}
   - component: {fileID: -904382764319105625}
+  - component: {fileID: 1959225158305556402}
   m_Layer: 6
   m_Name: Weapon_Launcher
   m_TagString: Untagged
@@ -172,6 +173,38 @@ MonoBehaviour:
   ammoUseOnStartCharge: 1
   ammoUsageRateWhileCharging: 1
   lastChargeTriggerTimeStamp: 0
+--- !u!114 &1959225158305556402
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2225486910712267859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdb76e016fbb07044baa6474c4197ef0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chargingObject: {fileID: 2990922162098100103}
+  spiningFrame: {fileID: 2990922162098100101}
+  distOrbitParticlePrebab: {fileID: 1087039822203223203, guid: b9cf7bff98404174d83a37d58c543aa5,
+    type: 3}
+  scale:
+    Min: {x: 0.01, y: 0.01, z: 0.01}
+    Max: {x: 1, y: 1, z: 1}
+  offset: {x: 0, y: 0, z: 0.784}
+  parentTransform: {fileID: 0}
+  orbitY:
+    Min: 3.1416
+    Max: 12.5684
+  radius:
+    Min: {x: 0.5, y: 0.5, z: 0.5}
+    Max: {x: 1.5, y: 1.5, z: 1.5}
+  spiningSpeed:
+    Min: 50
+    Max: 1500
+  chargeSound: {fileID: 8300000, guid: aa224fb88af4aab4eaad4478f850c0d2, type: 3}
+  loopChargeWeaponSfx: {fileID: 8300000, guid: 17e9a72d094655547854bafd5eac96dc, type: 3}
 --- !u!1 &2990922162098100101
 GameObject:
   m_ObjectHideFlags: 0
